@@ -1,130 +1,110 @@
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.nio.file.*;
 import java.util.Random;
 
 public class FileGeneration {
-    String[] words;
-    String passSymbols = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
-    Random random = new Random();
-
-    /**
-     * Добавляет в массив слов рандомные слова
-     */
-    public void setWords() {
-        int len;
-        words = new String[random.nextInt(1001)];
-        for(int i = 0; i < words.length; i++) {
-            len = 1 + (int) (Math.random() * 14);
-            words[i] = Arrays.toString(generateWord(len));
-        }
-    }
+    private final String Symbols = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+    private final Random random = new Random();
 
     /**
      * метод, конструирующий слово из рандомных букв и возвращающий его
+     *
      * @param len длина слова
      * @return возвращает слово
      */
-    public char[] generateWord(int len) {
-        char[] password = new char[len];
+    public StringBuilder generateWord(int len) {
+        StringBuilder sentence = new StringBuilder();
         for(int i = 0; i < len; i++) {
-            password[i] = passSymbols.charAt(random.nextInt(passSymbols.length()));
+            sentence.append(Symbols.charAt(random.nextInt(Symbols.length())));
         }
-        return password;
+        return sentence;
     }
 
     /**
      * метод, конструирующий слово для предложения из рандомных букв и возвращающий его
-     * @param len длина слова для составления предложения
-     * @param words_count дополнительная переменная, помогающая установить "
+     *
+     * @param len        длина слова для составления предложения
+     * @param wordsCount дополнительная переменная, помогающая установить "
      * @return возвращает сгенерированное слово
      */
-    public char[] generateWordForSentence(int len, int words_count) {
-        char[] password = generateWord(len + 1);
+    public StringBuilder generateWordForSentence(int len, int wordsCount) {
+        StringBuilder sentence = generateWord(len + 1);
         int zap = random.nextInt(11);
         if(zap == 1) {
-            password[len - 1] = ',';
+            sentence.replace(len - 1, len, ",");
         }
-        password[len] = ' ';
-        if(words_count == 0 && zap == 10) {
-            password[0] = '"';
+        sentence.replace(len, len, " ");
+        if(wordsCount == 0 && zap == 10) {
+            sentence.replace(0, 1, String.valueOf('"'));
         }
-        return password;
+        return sentence;
     }
 
     /**
      * метод, конструирующий предложение из созданных ранее слов и возвращающий его
-     * @param len количество слов в предложении
+     *
+     * @param len         количество слов в предложении
      * @param probability вероятность использования слов из массива слов
+     * @param words       массив слов
      * @return возвращает сгенерированное предложения
      */
-    public char[] generateSentence(int len, int probability) {
-        int letters_count;
-        int words_count = 0;
-        int luck;
-        int nw;
-        StringBuilder password = new StringBuilder();
+    public StringBuilder generateSentence(int len, int probability, String[] words) {
+        int lettersCount;
+        int wordsCount = 0;
+        StringBuilder sentence = new StringBuilder();
         for(int i = 0; i < len; i++) {
-            luck = random.nextInt(100);
-            if(luck < (double)1/probability * 100){
-                nw = random.nextInt(words.length);
-                for(int j = 0; j < words[i].length() - 1; j++) {
-                    if(words[i].charAt(j) != ',' && words[i].charAt(j) != ' ' && words[i].charAt(j) != '[' && words[i].charAt(j) != ']') {
-                        password.append(words[i].charAt(j));
-                    }
-                }
-                System.out.println(words[i]);
-                password.append(" ");
-
+            if(random.nextInt(100) < (double) 1 / probability * 100) {
+                sentence.append(words[random.nextInt(words.length)]);
+                sentence.append(" ");
             } else {
-                letters_count = 1 + (int) (Math.random() * 14);
-                password.append(generateWordForSentence(letters_count, words_count));
+                lettersCount = 1 + (int) (Math.random() * 14);
+                sentence.append(generateWordForSentence(lettersCount, wordsCount));
             }
-            words_count++;
+            wordsCount++;
         }
-        correctSentence(password);
-        return password.toString().toCharArray();
+        correctSentence(sentence);
+        return sentence;
     }
 
     /**
      * метод, изменяющий предложения по правилам
+     *
      * @param sentence предложение, подлежащее обработке
      */
     public void correctSentence(StringBuilder sentence) {
         if(sentence.charAt(0) == '"') {
             String first_letter = String.valueOf(sentence.charAt(1));
             sentence.replace(1, 2, first_letter.toUpperCase());
-            sentence.replace(sentence.length() - 2, sentence.length() - 1, String.valueOf('"'));
+            sentence.replace(sentence.length() - 2, sentence.length(), String.valueOf('"'));
         } else {
             String first_letter = String.valueOf(sentence.charAt(0));
             sentence.replace(0, 1, first_letter.toUpperCase());
-            int znak = random.nextInt(3);
-            if(znak == 0) {
-                sentence.replace(sentence.length() - 2, sentence.length() - 1, ".");
-            } else if(znak == 1) {
-                sentence.replace(sentence.length() - 2, sentence.length() - 1, "!");
+            int sign = random.nextInt(3);
+            if(sign == 0) {
+                sentence.replace(sentence.length() - 2, sentence.length(), ".");
+            } else if(sign == 1) {
+                sentence.replace(sentence.length() - 2, sentence.length(), "!");
             } else {
-                sentence.replace(sentence.length() - 2, sentence.length() - 1, "?");
+                sentence.replace(sentence.length() - 2, sentence.length(), "?");
             }
         }
     }
 
     /**
      * метод, конструирующий абзац из созданных ранее предложений и возвращающий его
-     * @param lg количество предложений в абзаце
+     *
+     * @param lg          количество предложений в абзаце
      * @param probability вероятность, необходимая для генерирования предложений
+     * @param words       массив слов
      * @return возвращает сгенерированный абзац
      */
-    public StringBuilder generateParagraph(int lg, int probability) {
+    public StringBuilder generateParagraph(int lg, int probability, String[] words) {
         int len = 1 + (int) (Math.random() * 19);
         int l = 1 + (int) (Math.random() * 14);
         StringBuilder paragraph = new StringBuilder();
         for(int i = 0; i < lg; i++) {
             for(int j = 0; j < len; j++) {
-                paragraph.append(generateSentence(l, probability));
+                paragraph.append(generateSentence(l, probability, words));
             }
             paragraph.append('\n');
         }
@@ -132,10 +112,10 @@ public class FileGeneration {
     }
 
     /**
-     * @param path имя директории(необходимо заранее создать), где будут создваться временные(с обычными вылезают ошибки по типу прав доступа) текстовые файлы
-     * @param n количество файлов
-     * @param size количество абзацев
-     * @param words сгенерированный массив слов
+     * @param path        имя директории(необходимо заранее создать), где будут создваться временные(с обычными вылезают ошибки по типу прав доступа) текстовые файлы
+     * @param n           количество файлов
+     * @param size        количество абзацев
+     * @param words       сгенерированный массив слов
      * @param probability вероятность для работы с массивом слов
      * @throws IOException выдаа ошибки
      */
@@ -144,19 +124,17 @@ public class FileGeneration {
         Path[] files;
         try {
             throw (Throwable) (rootDir = Paths.get(path));
-        } catch (Throwable exception){
+        } catch (Throwable exception) {
             System.out.println("You have no same directory");
         }
-        try {
-            files = new Path[n];
-            for(int i = 0; i < n; i++) {
+        files = new Path[n];
+        for(int i = 0; i < n; i++) {
+            if(rootDir != null) {
                 files[i] = Files.createTempFile(rootDir, "test", ".txt");
-                FileWriter myWriter = new FileWriter(files[i].toFile());
-                myWriter.write(String.valueOf(generateParagraph(size, probability)));
-                myWriter.close();
             }
-        }catch (Throwable exception){
-            System.out.println("No directory where you can create files");
+            FileWriter myWriter = new FileWriter(files[i].toFile());
+            myWriter.write(String.valueOf(generateParagraph(size, probability, words)));
+            myWriter.close();
         }
     }
 }
