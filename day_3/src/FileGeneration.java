@@ -12,12 +12,12 @@ public class FileGeneration {
      * @param len длина слова
      * @return возвращает слово
      */
-    public StringBuilder generateWord(int len) {
+    public String generateWord(int len) {
         StringBuilder sentence = new StringBuilder();
         for(int i = 0; i < len; i++) {
             sentence.append(Symbols.charAt(random.nextInt(Symbols.length())));
         }
-        return sentence;
+        return String.valueOf(sentence);
     }
 
     /**
@@ -27,8 +27,8 @@ public class FileGeneration {
      * @param wordsCount дополнительная переменная, помогающая установить "
      * @return возвращает сгенерированное слово
      */
-    public StringBuilder generateWordForSentence(int len, int wordsCount) {
-        StringBuilder sentence = generateWord(len + 1);
+    public String generateWordForSentence(int len, int wordsCount) {
+        StringBuilder sentence = new StringBuilder(generateWord(len + 1));
         int zap = random.nextInt(11);
         if(zap == 1) {
             sentence.replace(len - 1, len, ",");
@@ -37,7 +37,7 @@ public class FileGeneration {
         if(wordsCount == 0 && zap == 10) {
             sentence.replace(0, 1, String.valueOf('"'));
         }
-        return sentence;
+        return String.valueOf(sentence);
     }
 
     /**
@@ -48,7 +48,7 @@ public class FileGeneration {
      * @param words       массив слов
      * @return возвращает сгенерированное предложения
      */
-    public StringBuilder generateSentence(int len, int probability, String[] words) {
+    public String generateSentence(int len, int probability, String[] words) {
         int lettersCount;
         int wordsCount = 0;
         StringBuilder sentence = new StringBuilder();
@@ -63,7 +63,7 @@ public class FileGeneration {
             wordsCount++;
         }
         correctSentence(sentence);
-        return sentence;
+        return String.valueOf(sentence);
     }
 
     /**
@@ -98,7 +98,7 @@ public class FileGeneration {
      * @param words       массив слов
      * @return возвращает сгенерированный абзац
      */
-    public StringBuilder generateParagraph(int lg, int probability, String[] words) {
+    public String generateParagraph(int lg, int probability, String[] words) {
         int len = 1 + (int) (Math.random() * 19);
         int l = 1 + (int) (Math.random() * 14);
         StringBuilder paragraph = new StringBuilder();
@@ -108,7 +108,7 @@ public class FileGeneration {
             }
             paragraph.append('\n');
         }
-        return paragraph;
+        return String.valueOf(paragraph);
     }
 
     /**
