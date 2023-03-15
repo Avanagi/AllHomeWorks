@@ -1,40 +1,32 @@
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.UUID;
 
 public class Person implements Serializable {
     private final String Name;
     private final String Surname;
     private final int Age;
-    private final String[] Skills;
-    private final UUID serialVersionUID;
+    private final long serialVersionUID;
 
-    /**
-     * Конструктор для реализации класса Person
-     * @param Name Имя человека
-     * @param Surname Фамилия человека
-     * @param Age Возраст человека
-     * @param Skills Умения человека
-     */
-    public Person(String Name, String Surname, int Age, String[] Skills) {
+    public Person() {
+        Name = "";
+        Surname = "";
+        Age = 0;
+        serialVersionUID = 1L;
+    }
+
+    public Person(String Name, String Surname, int Age) {
         this.Name = Name;
         this.Surname = Surname;
         this.Age = Age;
-        this.Skills = Skills;
-        serialVersionUID = UUID.randomUUID();
+        serialVersionUID = 4L;
     }
 
-    /**
-     * @return возвращает все данные
-     */
     @Override
     public String toString() {
         return "Person{" +
-                "Name='" + Name + '\'' +
-                ", Surname='" + Surname + '\'' +
-                ", Age=" + Age +
-                ", Skills=" + Arrays.toString(Skills) +
-                ", serialVersionUID=" + serialVersionUID +
+                "Name = '" + Name + '\'' +
+                ", Surname = '" + Surname + '\'' +
+                ", Age = " + Age +
+                ", serialVersionUID = " + serialVersionUID +
                 '}';
     }
 
