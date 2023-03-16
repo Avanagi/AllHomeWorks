@@ -37,9 +37,8 @@ public class SerializeDeserializeImpl implements SerializeDeserialize {
         classParams.add(cls.getName());
         for(Field field: fields) {
             if(! field.getName().equals("serialVersionUID")) {
-                Class<?> fld = field.getType();
                 field.setAccessible(true);
-                Object data = (Object) field.get(object);
+                Object data = field.get(object);
                 Element em = document.createElement(field.getName());
                 classParams.add(field.getName());
                 em.appendChild(document.createTextNode(String.valueOf(data)));
