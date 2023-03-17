@@ -29,5 +29,4 @@ public class Person implements Serializable {
                 ", serialVersionUID = " + serialVersionUID +
                 '}';
     }
-
 }

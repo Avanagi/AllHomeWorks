@@ -1,0 +1,1 @@
+<Person><Name type = "String">Roman</Name><Surname type = "String">Gorelov</Surname><Age type = "int">19</Age><serialVersionUID type = "long">4</serialVersionUID></Person>

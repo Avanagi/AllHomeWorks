@@ -1,114 +1,126 @@
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SerializeDeserializeImpl implements SerializeDeserialize {
-    ArrayList<String> classParams = new ArrayList<String>();
+    ArrayList<Object> classParams = new ArrayList<>();
+    private static final Set<String> WRAPPER_TYPES = getWrapperTypes();
+
+    private static Set<String> getWrapperTypes() {
+        return new HashSet<>(Arrays.asList("Boolean", "Character", "Byte", "Short", "Integer",
+                "Long", "Float", "Double", "String"));
+    }
 
     /**
-     * Сериализует объект в XML файл
-     * @param object Сериализующийся объект
-     * @param files Имя XML файла
+     * Сверка ссылочных типов
+     *
+     * @param type именование ссылочного типа данных
+     * @return имеется  / не имеется
      */
-    @Override
-    public void serialize(Object object, String files) throws ParserConfigurationException, TransformerException,
-            IllegalAccessException {
-        String root = "Settings";
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.newDocument();
-        Element rootElement = document.createElement(root);
-        document.appendChild(rootElement);
+    private static boolean isWrapperType(String type) {
+        return WRAPPER_TYPES.contains(type);
+    }
 
-        Class<?> cls = object.getClass();
-        Field[] fields = cls.getDeclaredFields();
-        classParams.add(cls.getName());
+    /**
+     * Метод, сериализующий объект в XML-файл
+     *
+     * @param object сериализуемый обьект
+     * @param path   путь, в котором будет сохранен сериализованный файл
+     */
+    public void serialize(Object object, String path) {
+        if(object == null) return;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<").append(object.getClass().getSimpleName()).append(">");
+        classParams.add(object.getClass().getSimpleName());
+        Field[] fields = object.getClass().getDeclaredFields();
         for(Field field: fields) {
-            if(! field.getName().equals("serialVersionUID")) {
+            if(field.getType().isPrimitive() || isWrapperType(field.getType().getSimpleName())) {
                 field.setAccessible(true);
-                Object data = field.get(object);
-                Element em = document.createElement(field.getName());
-                classParams.add(field.getName());
-                em.appendChild(document.createTextNode(String.valueOf(data)));
-                rootElement.appendChild(em);
+                try {
+                    stringBuilder.append("<")
+                            .append(field.getName()).append(" ").append("type = \"")
+                            .append(field.getType().getSimpleName()).append("\">")
+                            .append(field.get(object)).append("</")
+                            .append(field.getName()).append(">");
+                    classParams.add(field.getName());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        stringBuilder.append("</").append(object.getClass().getSimpleName()).append(">");
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(document);
-        StreamResult result = new StreamResult(new StringWriter());
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "5");
-        transformer.transform(source, result);
-
-        FileOutputStream fop = null;
-        File file;
-        try {
-            file = new File(files);
-            fop = new FileOutputStream(file);
-            if(! file.exists()) {
-                file.createNewFile();
-            }
-
-            String xmlString = result.getWriter().toString();
-            byte[] contentInBytes = xmlString.getBytes();
-            fop.write(contentInBytes);
-            fop.flush();
-            fop.close();
+        try (OutputStream outStream = new FileOutputStream("./" + path + "/" + object.getClass().getSimpleName() + ".xml")) {
+            outStream.write(stringBuilder.toString().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if(fop != null) {
-                    fop.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
     }
 
+
     /**
      * Метод, возвращающий десериализованный объект
-     * @param file Файл, откуда происходит десериализация
+     *
+     * @param path путь, откуда будет десериализован сериализованный файл
      * @return Десериализованный объект
      */
     @Override
-    public Object deSerialize(String file) throws ParserConfigurationException, IOException, SAXException,
-            IllegalAccessException, ClassNotFoundException, InstantiationException {
-
-        File readFile = new File(file);
+    public Object deSerialize(String path) {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(readFile);
-        String objectType = classParams.get(0);
+        DocumentBuilder documentBuilder;
+        try {
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        Document document;
+        try {
+            document = documentBuilder.parse(new File("./" + path + "/" + classParams.get(0) + ".xml"));
+        } catch (SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        Object objectType = classParams.get(0);
         classParams.remove(0);
         int count = 0;
-        Class<?> clazz = Class.forName(objectType);
-        Person person = (Person) clazz.newInstance();
-        for(String params:
+        Class<?> clazz;
+        try {
+            clazz = Class.forName((String) objectType);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        Object person;
+        try {
+            person = (Object) clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        for(Object params:
                 classParams) {
-            String data = document.getElementsByTagName(params).item(0).getTextContent();
+            String data = document.getElementsByTagName((String) params).item(0).getTextContent();
             Field fields = clazz.getDeclaredFields()[count];
             fields.setAccessible(true);
             if(data.matches("[-+]?\\d+")) {
-                fields.setInt(person, Integer.parseInt(data));
+                try {
+                    fields.setInt(person, Integer.parseInt(data));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
-                fields.set(person, data);
+                try {
+                    fields.set(person, data);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             }
             count++;
         }
