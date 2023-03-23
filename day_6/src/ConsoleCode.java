@@ -4,15 +4,23 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
-public class Writing {
-    public void reading() throws Exception {
-        Path rootPath = Paths.get("./");
-        Path javaFilePath = rootPath.resolve("ClassCompile.java");
+public class ConsoleCode {
+    private Path rootPath;
+    private Path javaFilePath;
+
+    /**
+     * Записывает в файл код с консоли
+     *
+     * @throws Exception
+     */
+    public void input() throws Exception {
+        rootPath = Paths.get("./src/");
+        javaFilePath = rootPath.resolve("WorkerImpl.java");
 
         Scanner scanner = new Scanner(System.in);
 
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(javaFilePath)) {
-            bufferedWriter.write("public class ClassCompile implements Worker {\n");
+            bufferedWriter.write("public class WorkerImpl implements Worker {\n");
             bufferedWriter.write("  @Override\n");
             bufferedWriter.write("  public void doWork() {\n");
 
@@ -29,9 +37,12 @@ public class Writing {
             bufferedWriter.write("}");
 
         }
+    }
 
-
-        Compiling compiling = new Compiling();
-        compiling.compile(rootPath, javaFilePath);
+    /**
+     * @return возвращает путь до файла
+     */
+    public Path getJavaFilePath() {
+        return javaFilePath;
     }
 }
