@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Client {
+public class ClientListener {
 
     public static void main(String[] args) {
         System.out.print("Name - ");
