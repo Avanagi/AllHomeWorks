@@ -5,9 +5,16 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 
+/**
+ * Класс - слушатель
+ */
 public class Listener extends Thread {
     private final Socket socket;
 
+    /**
+     * Конструктор по значению
+     * @param socket сокет, который передается
+     */
     public Listener(Socket socket) {
         this.socket = socket;
     }

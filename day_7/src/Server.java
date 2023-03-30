@@ -6,6 +6,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Класс, запускающий сервер
+ */
 public class Server {
     public final static int serverPort = 1000;
     public static final List<Socket> sockets = new CopyOnWriteArrayList<>();
@@ -39,6 +42,12 @@ public class Server {
         }
     }
 
+    /**
+     * метод, достающий имя пользователя из сокета
+     * @param socket сокет, из которого мы получаем имя пользователя
+     * @return имя пользователя
+     * @throws Exception
+     */
     private static String getSocketName(Socket socket) throws Exception {
         InputStream inputStream = socket.getInputStream();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));

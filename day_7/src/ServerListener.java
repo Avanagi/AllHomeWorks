@@ -1,13 +1,23 @@
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * Класс, обрабатывающий информацию на сервере
+ */
 public class ServerListener extends Thread {
     private Socket socket;
 
+    /**
+     * Конструктор по значению
+     * @param socket сокет, который мы передаем в конструктор
+     */
     public ServerListener(Socket socket) {
         this.socket = socket;
     }
 
+    /**
+     * Метод, обрабатывающий выход пользователя
+     */
     @Override
     public void run() {
         try (InputStream inputStream = socket.getInputStream()) {
@@ -29,6 +39,10 @@ public class ServerListener extends Thread {
         }
     }
 
+    /**
+     * Метод, обрабатывающий полученное сообщение
+     * @param message сообщение, которое передается
+     */
     public void sendMessage(String message) {
         for(Socket socket:
                 Server.sockets) {

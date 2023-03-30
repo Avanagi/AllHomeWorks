@@ -5,6 +5,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * Класс, обрабатывающий имя пользователя
+ */
 public class ClientListener {
 
     public static void main(String[] args) {
@@ -24,6 +27,12 @@ public class ClientListener {
         }
     }
 
+    /**
+     * Метод, обрабатывающий имя пользователя
+     * @param socket сокет, который обрабатываем
+     * @param clientName имя, которое записываем в сокет
+     * @throws IOException
+     */
     private static void sendSocketName(Socket socket, String clientName) throws IOException {
         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         bufferedWriter.write(clientName);

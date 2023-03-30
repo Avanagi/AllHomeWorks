@@ -6,16 +6,27 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
+/**
+ * Класс, выводящий сообщение
+ */
 public class Sender extends Thread {
 
     private final Socket socket;
     private final String user;
 
+    /**
+     * Конструктор по значению
+     * @param socket сокет, который мы передаем
+     * @param user имя пользователя
+     */
     public Sender(Socket socket, String user) {
         this.socket = socket;
         this.user = user;
     }
 
+    /**
+     * Метод, который отвечает за вывод сообщения
+     */
     @Override
     public void run() {
         try (OutputStreamWriter outputStream = new OutputStreamWriter(socket.getOutputStream())) {
