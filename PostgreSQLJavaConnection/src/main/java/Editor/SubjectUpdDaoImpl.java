@@ -7,6 +7,9 @@ import java.sql.Statement;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
+/**
+ * Класс, реализующий изменение предмета
+ */
 public class SubjectUpdDaoImpl implements SubjectUpdDao{
 	
 	private static final Logger logger = Logger.getLogger(SubjectUpdDaoImpl.class.getName());

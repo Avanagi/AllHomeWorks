@@ -10,6 +10,9 @@ import java.util.logging.Logger;
 
 import Objects.*;
 
+/**
+ * Класс, реализующий чтение студента
+ */
 public class StudentDaoImpl implements StudentDao{
 	
 	private static final Logger logger = Logger.getLogger(StudentDaoImpl.class.getName());
@@ -17,7 +20,7 @@ public class StudentDaoImpl implements StudentDao{
     private Connection con;
     private Statement stmt;
     private ResultSet rs;
-    	
+
 	public void getStudents(String url, String user, String password) {
 		logger.info("Начинаем вывод всех студентов");
 		String query = "select name, surname, patronymic, subject_id from students";
@@ -27,7 +30,7 @@ public class StudentDaoImpl implements StudentDao{
             stmt = con.createStatement();
             rs = stmt.executeQuery(query);
             
-            ArrayList<Student> subArr = new ArrayList<Student>();
+            ArrayList<Student> subArr = new ArrayList<>();
  
             while (rs.next()) {
             	Student sub = new Student(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4));
@@ -50,9 +53,8 @@ public class StudentDaoImpl implements StudentDao{
 			}
         }
 	}
-	
-	
-	
+
+
 	public void getCurrStudentSubjects(String url, String user, String password, String name) {
 		logger.info("Начинаем вывод студента и предметов, которые у него есть");
 		String query = "select st.name, st.surname, sub.subject, sub.teacher\r\n"
@@ -65,7 +67,7 @@ public class StudentDaoImpl implements StudentDao{
             stmt = con.createStatement();
             rs = stmt.executeQuery(query);
             
-            ArrayList<Student> subArr = new ArrayList<Student>();
+            ArrayList<Student> subArr = new ArrayList<>();
             
             while (rs.next()) {
             	Student sub = new Student(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4));

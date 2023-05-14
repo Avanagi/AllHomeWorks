@@ -8,6 +8,9 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 import Objects.*;
 
+/**
+ * Класс, реализующий изменение студента
+ */
 public class StudentUpdDaoImpl implements StudentUpdDao{
 	
 	private static final Logger logger = Logger.getLogger(StudentUpdDaoImpl.class.getName());

@@ -9,6 +9,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+/**
+ * Класс, реализующий чтение предмета
+ */
 public class SubjectDaoImpl implements SubjectDao{
 	
 	private static final Logger logger = Logger.getLogger(SubjectDaoImpl.class.getName());
@@ -27,7 +30,7 @@ public class SubjectDaoImpl implements SubjectDao{
             stmt = con.createStatement();
             rs = stmt.executeQuery(query);
             
-            ArrayList<Subject> subArr = new ArrayList<Subject>();
+            ArrayList<Subject> subArr = new ArrayList<>();
             
             while (rs.next()) {
             	Subject sub = new Subject(rs.getString(1), rs.getString(2));
@@ -64,7 +67,7 @@ public class SubjectDaoImpl implements SubjectDao{
             stmt = con.createStatement();
             rs = stmt.executeQuery(query);
             
-            ArrayList<Student> subArr = new ArrayList<Student>();
+            ArrayList<Student> subArr = new ArrayList<>();
             
             while (rs.next()) {
             	Student sub = new Student(rs.getString(1), rs.getString(2), rs.getString(3));
