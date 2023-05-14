@@ -1,10 +1,12 @@
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Logger;
+import Editor.*;
 
 public class PostgreSQLJavaConnection {
 	
 	public static void main(String[] args) throws SQLException {
+		String url = "jdbc:postgresql://127.0.0.1:5432/school";
+	    String user = "postgres";
+	    String password = "2281488";
 		//dbEditor.createStudent("Alexander", "Ramzanov", "Borisovich", 2);
 		//dbEditor.createSubject("Chemistry", "Lopashov");
 		//dbEditor.deleteStudent("Alexander");
@@ -20,9 +22,8 @@ public class PostgreSQLJavaConnection {
 		//dbUpdate.createStudent(stl);
 		
 		
-		DBInfo dbinfo = new DBInfo();
-		dbinfo.showCurrStudentSubjects("GG");
-		dbinfo.showCurrSubjectStudents("English");
+		StudentDaoImpl dbinfo = new StudentDaoImpl();
+		dbinfo.getCurrStudentSubjects(url, user, password, "Roman");
 	}
 	
 }

@@ -1,10 +1,21 @@
+package Objects;
 
-public class Student {
+public class Student extends Subject{
 	private
 		String Name;
 		String Surname;
 		String Patronymic;
 		int subject_id;
+		
+	public Student(String Name, String Subject, String Teacher) {
+		super(Subject, Teacher);
+		this.Name = Name;
+	}
+	
+	public Student(String Name, String Surname, String Subject, String Teacher) {
+		super(Subject, Teacher);
+		this.Name = Name;
+		this.Surname = Surname;	}
 		
 	public Student(String Name, String Surname, String Patronymic, int subject_id) {
 		this.Name = Name;
